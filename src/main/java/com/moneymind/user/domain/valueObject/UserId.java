@@ -1,19 +1,17 @@
 package com.moneymind.user.domain.valueObject;
 
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Embeddable
-@Access(AccessType.FIELD)
+@Data
 public class UserId {
 
-    @Column(name = "user_id",nullable = false,updatable = false)
+    @Column(insertable=false, updatable=false)
     private UUID value;
 
     protected UserId(){}

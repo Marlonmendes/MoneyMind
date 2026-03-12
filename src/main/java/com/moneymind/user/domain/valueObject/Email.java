@@ -8,18 +8,18 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Embeddable
-public final class Email {
+public class Email {
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
     @Getter
     @Column(name = "email", nullable = false, unique = true)
-    private final String value;
+    private String userEmail;
 
-    public Email(String value) {
-        validade(value);
-        this.value = normalize(value);
+    public Email(String userEmail) {
+        validade(userEmail);
+        this.userEmail = normalize(userEmail);
     }
 
     private void validade(String email){
@@ -31,6 +31,8 @@ public final class Email {
         }
     }
 
+    protected Email(){}
+
     private String normalize(String email){
         return email.trim().toLowerCase();
     }
@@ -39,16 +41,16 @@ public final class Email {
     public boolean equals(Object o){
         if(this == o) return true;
         if(!(o instanceof Email that)) return false;
-        return value.equals(that.value);
+        return userEmail.equals(that.userEmail);
     }
 
     @Override
     public int hashCode(){
-        return Objects.hash(value);
+        return Objects.hash(userEmail);
     }
 
     @Override
     public String toString(){
-        return value;
+        return userEmail;
     }
 }

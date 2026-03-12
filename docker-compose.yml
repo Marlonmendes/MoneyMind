@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: finsight-postgres
+    restart: always
+
+    environment:
+      POSTGRES_DB: MoneyMind
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: manager101
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

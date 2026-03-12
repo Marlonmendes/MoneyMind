@@ -1,16 +1,20 @@
 package com.moneymind.shared.domain.valueObject;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.util.Objects;
 import java.util.Set;
 
-public final class Currency {
+@Embeddable
+@Getter
+public class Currency {
 
     private static final Set<String> SUPPORTED = Set.of("BRL", "USD", "EUR");
 
-    @Getter
-    private final String code;
+    @Column(name = "default_currency")
+    private String code;
 
     public Currency(String code) {
         this.code = code;
@@ -36,6 +40,8 @@ public final class Currency {
         if(!(o instanceof Currency that)) return false;
         return code.equals(that.code);
     }
+
+    protected Currency(){}
 
     @Override
     public int hashCode(){

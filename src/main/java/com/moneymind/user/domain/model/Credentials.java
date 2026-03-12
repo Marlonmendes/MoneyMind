@@ -2,26 +2,24 @@ package com.moneymind.user.domain.model;
 
 import com.moneymind.user.domain.valueObject.Email;
 import jakarta.persistence.*;
-import lombok.Getter;
 
-import java.time.Instant;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "user_credentials")
-@Access(AccessType.FIELD)
 public class Credentials {
 
     @Id
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "credential_id", nullable = false, updatable = false)
     private UUID id;
 
     @Embedded
     private Email email;
 
-    @Embedded
+    @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Column(name = "account_verified", nullable = false)
@@ -30,12 +28,13 @@ public class Credentials {
     @Column(name = "account_locked", nullable = false)
     private boolean accountLocked;
 
+    @Column(name = "failed_login_attempts", nullable = false)
     private int failedLoginAttempts;
 
-    @Column(name = "last_login")
+    @Column(name = "last_password_change")
     private LocalDateTime lastPasswordChange;
 
-    public Credentials(Email email, String passwordHash){
+    private Credentials(Email email, String passwordHash){
         this.id = UUID.randomUUID();
         this.email = Objects.requireNonNull(email);
         this.passwordHash = Objects.requireNonNull(passwordHash);
@@ -43,6 +42,17 @@ public class Credentials {
         this.accountLocked = false;
         this.failedLoginAttempts = 0;
         this.lastPasswordChange = LocalDateTime.now();
+    }
+
+    protected Credentials(){}
+
+    public static Credentials create(Email email, String passwordHash){
+        Objects.requireNonNull(passwordHash, "Password hash cannot be null");
+
+        return new Credentials(
+                email,
+                passwordHash
+        );
     }
 
     public boolean isEmailVerified(){

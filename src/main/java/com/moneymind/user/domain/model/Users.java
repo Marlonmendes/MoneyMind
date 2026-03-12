@@ -1,22 +1,26 @@
 package com.moneymind.user.domain.model;
 
 import com.moneymind.shared.domain.valueObject.Currency;
-import com.moneymind.user.domain.model.UserProfile;
 import com.moneymind.user.domain.valueObject.Email;
 import com.moneymind.user.domain.valueObject.UserId;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 @Access(AccessType.FIELD)
+@Data
 public class Users {
 
+    @Getter
     @EmbeddedId
     private UserId id;
+
     @Embedded
     private Email email;
 
@@ -28,21 +32,21 @@ public class Users {
     @JoinColumn(name = "credentials_id")
     private Credentials credentials;
 
-    @OneToOne(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.LAZY,
-            optional = false
-    )
-    @JoinColumn(name = "profile_id")
+    @Embedded
     private UserProfile profile;
 
     @Embedded
     private FinancialSettings financialSettings; //Tipo de moeda, orçamento pessoal,
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
     private boolean active;
+
+    public FinancialSettings getFinancialSettings() {
+        return financialSettings;
+    }
+
+    protected Users(){}
 
     public Users(
             UserId id,
@@ -56,7 +60,7 @@ public class Users {
         this.profile = Objects.requireNonNull(profile);
         this.credentials = Objects.requireNonNull(credentials);
         this.financialSettings = Objects.requireNonNull(financialSettings);
-        this.createdAt = Instant.now();
+        this.createdAt = LocalDateTime.now();
         this.active = true;
     }
 
@@ -65,14 +69,14 @@ public class Users {
             Email email,
             Credentials credentials,
             UserProfile profile,
-            FinancialSettings financialSettings
+            FinancialSettings settings
     ) {
         return new Users(
                 id,
                 email,
                 credentials,
                 profile,
-                financialSettings
+                settings
         );
     }
 
@@ -113,4 +117,5 @@ public class Users {
         if(!(o instanceof Users user)) return false;
         return id.equals(user.id);
     }
+
 }

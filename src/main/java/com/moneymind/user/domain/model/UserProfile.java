@@ -1,65 +1,61 @@
 package com.moneymind.user.domain.model;
 
+import com.moneymind.user.domain.valueObject.UserId;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "user_profiles")
-@Access(AccessType.FIELD)
+@Embeddable
 public class UserProfile {
 
-    @Id
-    private UUID id;
-
-    @Column(nullable = false)
+    @Column(insertable=false, updatable=false)
+    private UserId id;
+    @Column(name = "firstName",nullable = false)
     private String firstName;
-    @Column(nullable = false)
+    @Column(name = "lastName",nullable = false)
     private String lastName;
-
+    @Column(name = "birthDate")
     private LocalDate birthDate;
+    @Column(name = "phone")
     private String phone;
+    @Column(name = "timezone",nullable = false)
     private String timezone;
+    @Column(name = "language",nullable = false)
     private String language;
 
     public UserProfile(
-            UUID id,
+            UserId id,
             String firstName,
             String lastName,
-            LocalDate birthDate,
-            String phone,
             String timezone,
             String language
     ) {
         this.id = Objects.requireNonNull(id);
         this.firstName = validate(firstName);
         this.lastName = validate(lastName);
-        this.birthDate = birthDate;
-        this.phone = phone;
         this.timezone = timezone;
         this.language = language;
     }
 
     public static UserProfile create(
+            UserId id,
             String firstName,
             String lastName,
-            LocalDate birthDate,
-            String phone,
             String timezone,
             String language
     ) {
         return new UserProfile(
-                UUID.randomUUID(),
+                id,
                 firstName,
                 lastName,
-                birthDate,
-                phone,
                 timezone,
                 language
         );
     }
+
+    protected UserProfile(){}
 
     private String validate(String value){
         if(value == null || value.isBlank()){

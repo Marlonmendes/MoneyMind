@@ -2,20 +2,19 @@ package com.moneymind.user.domain.model;
 
 import com.moneymind.shared.domain.valueObject.Currency;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity
-@Table(name = "user_financial_settings")
+@Embeddable
 @Access(AccessType.FIELD)
+@Data
 public class FinancialSettings {
 
-    @Id
-    @Column(nullable = false, updatable = false)
-    private UUID id;
+    @Column(name = "settings_id", nullable = false, updatable = false)
+    private UUID settingsId;
 
     @Embedded
     private Currency defaultCurrency;
@@ -36,13 +35,15 @@ public class FinancialSettings {
     @Column(name = "billing_cycle_day")
     private Integer billingCycleDay;
 
+    protected FinancialSettings(){}
+
     public FinancialSettings(
             Currency defaultCurrency,
             BigDecimal monthlyIncome,
             BigDecimal spendingAlertLimit,
             Integer billingCycleDay
     ) {
-        this.id = UUID.randomUUID();
+        this.settingsId = UUID.randomUUID();
         this.defaultCurrency = Objects.requireNonNull(defaultCurrency);
         this.monthlyIncome = monthlyIncome;
         this.spendingAlertLimit = spendingAlertLimit;
@@ -50,6 +51,16 @@ public class FinancialSettings {
         this.financialAlertsEnabled = true;
         this.billingCycleDay = billingCycleDay;
         this.alertThresholdPercentage = 80;
+    }
+
+    public static FinancialSettings defaultSettings(){
+        Currency currency = new Currency("BRL");
+        return new FinancialSettings(
+                currency,
+                new BigDecimal(1000),
+                new BigDecimal(80),
+                1
+        );
     }
 
     public void changeBillingCycle(Integer day){
